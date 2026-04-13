@@ -15,7 +15,13 @@ fn get_git_info() -> anyhow::Result<VersionControl> {
 
 pub(crate) fn get_info() -> Option<VersionControl> {
 	if cfg!(feature = "git") {
-		get_git_info().ok()
+		match get_git_info() {
+			Ok(info) => Some(info),
+			Err(err) => {
+				println!("cargo:warning=Failed to collect git info: {err:#}");
+				None
+			}
+		}
 	} else {
 		None
 	}
